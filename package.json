@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "browser-sync start --server --no-ui --files \"js/**/*.js\"",
+    "start": "browser-sync start --server --port 8080 --https --ui-port 8090 --host \"borovkov\" --files \"js/**/*.js\"",
     "lint": "eslint js/"
   },
   "engines": {
