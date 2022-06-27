@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "browser-sync start --server --port 8080 --https --ui-port 8090 --host \"borovkov\" --files \"js/**/*.js\"",
+    "start": "browser-sync start --server --no-ui --config \"C:\\Users\\Dmitry\\Desktop\\htmlacademy\\VSCode\\bs-config.js\" --files \"js/**/*.js\"",
     "lint": "eslint js/"
   },
   "engines": {

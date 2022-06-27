@@ -5,7 +5,7 @@
  * @param {number} end Конец отрезка. Целое положительное число.
  * @return {number} Случайное целое число из отрезка.
  */
-function getRandomInt(start, end) {
+export function getRandomInt(start, end) {
   if (isNaN(start) || isNaN(end) ||
     typeof start !== 'number' || typeof end !== 'number' ||
     start < 0 || end < 0 ||
@@ -27,7 +27,7 @@ function getRandomInt(start, end) {
  * @param {number} fractionLen Цифр после запятой у сгенерированного числа.
  * @return {number} Случайное число.
  */
-function getRandomFrac(start, end, fractionLength) {
+export function getRandomFrac(start, end, fractionLength) {
   if (!isFinite(start) || !isFinite(end) || !isFinite(fractionLength) ||
     typeof start !== 'number' || typeof end !== 'number' || typeof fractionLength !== 'number' ||
     start < 0 || end < 0 || fractionLength < 0 ||
@@ -49,7 +49,7 @@ function getRandomFrac(start, end, fractionLength) {
  * @param {number} maxLength Количество символов для сравнения с количеством символов строки string
  * @return {boolean} 'Истина', если длина строки string меньше или равно maxLength. В остальных случаях - 'Ложь'
  */
-function IsFitted(string, maxLength) {
+export function IsFitted(string, maxLength) {
   if (isNaN(maxLength) ||
     typeof maxLength !== 'number' ||
     maxLength < 0 ||
@@ -68,7 +68,7 @@ function IsFitted(string, maxLength) {
  * @param {Array} items Массив
  * @return {object} Случайный элемент массива
  */
-const GetRandomItem = (items) => items[getRandomInt(0, items.length - 1)];
+export const GetRandomItem = (items) => items[getRandomInt(0, items.length - 1)];
 
 /**
  * Создание подмассива случайной длины из неповторяющихся элементов исходного массива.
@@ -76,7 +76,7 @@ const GetRandomItem = (items) => items[getRandomInt(0, items.length - 1)];
  * @param {Array} items Исходный массив.
  * @return {object} Массив случайной длины, состоящий из неповторяющихся элементов исходного массива.
  */
-const getRandomSubarray = (items) => {
+export const getRandomSubarray = (items) => {
   const itemsIndexes = [...Array(items.length).keys()];
   //items.forEach((item, index) => itemsIndexes.push(index));
   const subarrayLength = getRandomInt(1, items.length);
@@ -95,7 +95,7 @@ const getRandomSubarray = (items) => {
  * @param {Array} items Исходный массив.
  * @return {object} Массив случайной длины, состоящий из элементов исходного массива.
  */
-const getRandomArray = (items) => {
+export const getRandomArray = (items) => {
   const randomArrayLength = getRandomInt(1, 12);
   const randomArray = Array(randomArrayLength);
   for (let i = 0; i < randomArray.length; i++) {
@@ -103,5 +103,3 @@ const getRandomArray = (items) => {
   }
   return randomArray;
 };
-
-export { getRandomInt, getRandomFrac, IsFitted, getRandomSubarray, getRandomArray, GetRandomItem};
