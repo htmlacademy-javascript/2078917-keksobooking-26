@@ -37,14 +37,16 @@ function generateTitleAndDescription() {
   })();
   this.description = (() => {
     let resultString = '';
-    const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
+
     const typeRussian = HOUSING_TYPES_EN_RU[this.type];
     if (typeRussian) {
       if (this.guests || typeof (this.guests) === 'number') {
+        const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
         resultString += `${typeRussian} вмещает не более ${this.guests} ${wordWithCorrectEnding}.`;
       }
     }
     else if (this.guests || typeof (this.guests) === 'number') {
+      const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
       resultString += `Жилье вмещает не более ${this.guests} ${wordWithCorrectEnding}.`;
     }
     if (this.rooms || typeof (this.rooms) === 'number') {
