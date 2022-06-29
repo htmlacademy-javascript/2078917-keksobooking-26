@@ -11,7 +11,13 @@ import { HOUSING_TYPES_EN_RU } from '../dictionary.js';
 const setTextOrHideElement = (element, ...strings) => {
   const isValid = strings.every((str) => !!str || typeof (str) === 'number');
   if (isValid) {
-    element.textContent = strings.join(' ');
+    //element.textContent = strings.join(' ');
+    element.childNodes.forEach((node) => {
+      if (node.nodeType === 3) {
+        node.remove();
+      }
+    });
+    element.prepend(`${strings.join(' ')} `);
   }
   else {
     element.classList.add('visually-hidden');
@@ -19,9 +25,29 @@ const setTextOrHideElement = (element, ...strings) => {
 };
 
 /**
+ * Выбор слова с корректным окончанием в зависимости от числа
+ *
+ * @param {Number} number Число.
+ * @param {Array} Массив, состоящий из трех элементов, где:
+ * Первый элемент - слово с корректным окончанием, если объект 1 (например 'комната')
+ * Второй элемент - слово с корректным окончанием, если объектов 2 (например 'комнаты')
+ * Третий элемент - слово с корректным окончанием, если объектов 5 (например 'комнат')
+ * @return {object} Выбранное слово.
+ */
+const getEnding = (number, words) => {
+  const oneDigitNumber = number % 10;
+  const twoDigitNumber = number % 100;
+  if (oneDigitNumber === 1 && twoDigitNumber !== 11) {return words[0];}
+  if ((oneDigitNumber === 2 && twoDigitNumber !== 12) ||
+    (oneDigitNumber === 3 && twoDigitNumber !== 13) ||
+    (oneDigitNumber === 4 && twoDigitNumber !== 14)) {return words[1];}
+  return words[2];
+};
+
+/**
  * Генерация массива елементов, где элемент массива - карточка с информацией о сдаче жилья
  *
- * @param {Array} number Количество генерируемых объектов.
+ * @param {Number} number Количество генерируемых объектов.
  * @return {object} Массив объектов.
  */
 export const getAdvertElements = (number) => {
@@ -31,44 +57,42 @@ export const getAdvertElements = (number) => {
   const adverts = getAdvertObjects(number);
   const advertELements = Array(number);
   //const fragment = document.createDocumentFragment();
-  adverts.forEach((advert, index) => {
+  adverts.forEach(({ author, offer }, index) => {
     const cardElement = cardTemplate.cloneNode(true);
 
+    const { avatar } = author;
+    const { title, address, price, type, rooms, guests, checkIn, checkOut, features, description, photos } = offer;
+
     const titleElement = cardElement.querySelector('.popup__title');
-    const title = advert.offer.title;
     setTextOrHideElement(titleElement, title);
 
     const addressElement = cardElement.querySelector('.popup__text--address');
-    const address = advert.offer.address;
     setTextOrHideElement(addressElement, address);
 
     const priceElement = cardElement.querySelector('.popup__text--price');
-    const price = advert.offer.price;
-    setTextOrHideElement(priceElement, price, ' ₽/ночь');
+    setTextOrHideElement(priceElement, price);
 
     const typeElement = cardElement.querySelector('.popup__type');
-    const type = advert.offer.type;
     setTextOrHideElement(typeElement, HOUSING_TYPES_EN_RU[type]);
 
     const capacityElement = cardElement.querySelector('.popup__text--capacity');
-    const rooms = advert.offer.rooms;
-    const guests = advert.offer.guests;
     if (rooms || typeof (rooms) === 'number') {
-      capacityElement.textContent = `${rooms} комнаты`;
+      let wordWithCorrectEnding = getEnding(rooms, ['комната', 'комнаты', 'комнат']);
+      capacityElement.textContent = `${rooms} ${wordWithCorrectEnding}`;
       if (guests || typeof (guests) === 'number') {
-        capacityElement.textContent += ` для ${guests} гостей`;
+        wordWithCorrectEnding = getEnding(guests, ['гостя', 'гостей', 'гостей']);
+        capacityElement.textContent += ` для ${guests} ${wordWithCorrectEnding}`;
       }
     }
     else if (guests || typeof (guests) === 'number') {
-      capacityElement.textContent = `Для ${guests} гостей`;
+      const wordWithCorrectEnding = getEnding(guests, ['гостя', 'гостей', 'гостей']);
+      capacityElement.textContent = `Для ${guests} ${wordWithCorrectEnding}`;
     }
     else {
       capacityElement.classList.add('visually-hidden');
     }
 
     const checkElement = cardElement.querySelector('.popup__text--time');
-    const checkIn = advert.offer.checkin;
-    const checkOut = advert.offer.checkout;
     if (checkIn) {
       checkElement.textContent = `Заезд после ${checkIn}`;
       if (checkOut) {
@@ -82,7 +106,6 @@ export const getAdvertElements = (number) => {
       checkElement.classList.add('visually-hidden');
     }
 
-    const features = advert.offer.features;
     if (features && Array.isArray(features) && features.length > 0) {
       cardElement.querySelectorAll('.popup__feature').forEach((feature) => {
         const result = [...feature.classList]
@@ -103,13 +126,11 @@ export const getAdvertElements = (number) => {
     }
 
     const descriptionElement = cardElement.querySelector('.popup__description');
-    const description = advert.offer.description;
     setTextOrHideElement(descriptionElement, description);
 
     const photosContainer = cardElement.querySelector('.popup__photos');
     const photoElementTemplate = photosContainer.querySelector('img');
     photoElementTemplate.remove();
-    const photos = advert.offer.photos;
     if (photos && Array.isArray(photos) && photos.length > 0) {
       photos.forEach((photo) => {
         const photoElement = photoElementTemplate.cloneNode(true);
@@ -119,7 +140,6 @@ export const getAdvertElements = (number) => {
     }
 
     const avatarElement = cardElement.querySelector('.popup__avatar');
-    const avatar = advert.author.avatar;
     if (avatar) {
       avatarElement.attributes.src.textContent = avatar;
     }

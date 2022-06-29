@@ -22,34 +22,6 @@ const MAX_ROOMS = 5;
 const MAX_GUESTS = 5;
 
 /**
- * Выборка времени регистрации
- *
- * @return {object} Случайное время регистрации.
- */
-const getCheckTime = () => GetRandomItem(CHECK_TIMES);
-
-/**
- * Выборка типа жилья
- *
- * @return {object} Случайный тип жилья.
- */
-const getAddressType = () => GetRandomItem(Object.keys(HOUSING_TYPES_EN_RU));
-
-/**
- * Получение массива url-путей к фото
- *
- * @return {object} Массив случайной длины с url-путями к фото.
- */
-const getPhotosRandomly = () => getRandomArray(AVATAR_URLS);
-
-/**
- * Получение массива удобств
- *
- * @return {object} Массив случайной длины с неповторяющимися элементами.
- */
-const getSomeFeatures = () => getRandomSubarray(Object.keys(FEATURES_EN_RU));
-
-/**
  * Добавление к объекту (предложение аренды) свойств title (заголовок) и description (описание)
  *
  * @param {Object} offer Предложение аренды жилья.
@@ -76,8 +48,8 @@ function generateTitleAndDescription() {
     if (this.rooms || typeof (this.rooms) === 'number') {
       resultString += ` Общее число комнат - ${this.rooms}.`;
     }
-    if (this.features && Array.isArray(this.features) && this.features.length > 0) {
-      resultString += ` Среди удобств имеется: ${this.features.map((feature) => FEATURES_EN_RU[feature])}.`;
+    if (Array.isArray(this.features) && this.features.length > 0) {
+      resultString += ` Среди удобств имеется: ${this.features.map((feature) => ` ${FEATURES_EN_RU[feature]}`)}.`;
     }
     return resultString;
   })();
@@ -97,18 +69,19 @@ export const getAdvertObjects = (number) => {
     const lng = getRandomFrac(LOCATION_LNG.min, LOCATION_LNG.max, 5);
     const advert = {
       author: {
-        avatar: `img/avatars/user${(i < 10) ? `0${i}` : `${i}`}.png`
+        //avatar: `img/avatars/user${(i < 10) ? `0${i}` : `${i}`}.png`
+        avatar: `img/avatars/user${String(i).padStart(2, '0')}.png`
       },
       offer: {
         address: `${lat}, ${lng}`,
         price: getRandomInt(0, MAX_RENT_PRICE),
-        type: getAddressType(),
+        type: GetRandomItem(Object.keys(HOUSING_TYPES_EN_RU)),
         rooms: getRandomInt(0, MAX_ROOMS),
         guests: getRandomInt(0, MAX_GUESTS),
-        checkin: getCheckTime(),
-        checkout: getCheckTime(),
-        features: getSomeFeatures(),
-        photos: getPhotosRandomly(),
+        checkin: GetRandomItem(CHECK_TIMES),
+        checkout: GetRandomItem(CHECK_TIMES),
+        features: getRandomSubarray(Object.keys(FEATURES_EN_RU)),
+        photos: getRandomArray(AVATAR_URLS),
         generateTitleAndDescription: generateTitleAndDescription
       },
       location: {
