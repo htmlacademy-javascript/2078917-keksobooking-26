@@ -9,7 +9,6 @@ export const changeFormState = (toActive) => {
 
   const formHeader = form.querySelector('.ad-form-header');
   formHeader.querySelector('#avatar').disabled = !toActive;
-
   form.querySelector('#title').disabled = !toActive;
   form.querySelector('#address').disabled = !toActive;
   form.querySelector('#type').disabled = !toActive;
