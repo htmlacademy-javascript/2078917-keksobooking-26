@@ -3,6 +3,5 @@ import './modules/form-submit.js';
 import './modules/form-validation.js';
 import './modules/map-loader.js';
 import './modules/site-statements/activate-site.js';
-
 import {changeFormState} from './modules/site-statements/activate-site.js';
 changeFormState(0);

@@ -1,5 +1,6 @@
 import { getRandomInt, getRandomFrac, getRandomSubarray, getRandomArray, GetRandomItem } from './get-random.js';
 import { HOUSING_TYPES_EN_RU, FEATURES_EN_RU } from '../dictionary.js';
+import { getEnding } from '../utils.js';
 
 const LOCATION_LAT = {
   min: 35.65,
@@ -36,14 +37,17 @@ function generateTitleAndDescription() {
   })();
   this.description = (() => {
     let resultString = '';
+
     const typeRussian = HOUSING_TYPES_EN_RU[this.type];
     if (typeRussian) {
       if (this.guests || typeof (this.guests) === 'number') {
-        resultString += `${typeRussian} вмещает не более ${this.guests} гостей.`;
+        const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
+        resultString += `${typeRussian} вмещает не более ${this.guests} ${wordWithCorrectEnding}.`;
       }
     }
     else if (this.guests || typeof (this.guests) === 'number') {
-      resultString += `Жилье вмещает не более ${this.guests} гостей.`;
+      const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
+      resultString += `Жилье вмещает не более ${this.guests} ${wordWithCorrectEnding}.`;
     }
     if (this.rooms || typeof (this.rooms) === 'number') {
       resultString += ` Общее число комнат - ${this.rooms}.`;
@@ -90,7 +94,7 @@ export const getAdvertObjects = (number) => {
       }
     };
     advert.offer.generateTitleAndDescription();
-    adverts[i-1] = advert;
+    adverts[i - 1] = advert;
   }
   return adverts;
 };
