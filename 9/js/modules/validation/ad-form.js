@@ -46,6 +46,7 @@ const reset = () => {
   avatarElement.src = 'img/muffin-grey.svg';
 
   form.reset();
+  typeElement.dispatchEvent(new Event('change', { 'bubbles': true }));
   pristine.validate();
 };
 
