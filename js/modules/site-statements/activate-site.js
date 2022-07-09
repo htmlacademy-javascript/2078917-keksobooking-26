@@ -1,32 +1,56 @@
-export const changeFormState = (toActive) => {
-  const form = document.querySelector('.ad-form');
+export const changeFormsState = (toActive) => {
+  ////////////////////////////////форма заполнения
+  const formAd = document.querySelector('.ad-form');
   if (toActive) {
-    form.classList.remove('ad-form--disabled');
+    formAd.classList.remove('ad-form--disabled');
   }
   else {
-    form.classList.add('ad-form--disabled');
+    formAd.classList.add('ad-form--disabled');
   }
 
-  const formHeader = form.querySelector('.ad-form-header');
+  const formHeader = formAd.querySelector('.ad-form-header');
   formHeader.querySelector('#avatar').disabled = !toActive;
-  form.querySelector('#title').disabled = !toActive;
-  form.querySelector('#address').disabled = !toActive;
-  form.querySelector('#type').disabled = !toActive;
-  form.querySelector('#price').disabled = !toActive;
-  form.querySelector('.ad-form__slider').disabled = !toActive;
-  form.querySelector('#timein').disabled = !toActive;
-  form.querySelector('#timeout').disabled = !toActive;
-  form.querySelector('#room_number').disabled = !toActive;
-  form.querySelector('#capacity').disabled = !toActive;
-  form.querySelectorAll('.features__checkbox').forEach((checkbox) => {checkbox.disabled = !toActive;});
-  form.querySelector('#description').disabled = !toActive;
-  form.querySelector('#images').disabled = !toActive;
-  form.querySelector('.ad-form__submit').disabled = !toActive;
-  form.querySelector('.ad-form__reset').disabled = !toActive;
+
+  formAd.querySelector('#title').disabled = !toActive;
+  formAd.querySelector('#address').disabled = !toActive;
+  formAd.querySelector('#type').disabled = !toActive;
+  formAd.querySelector('#price').disabled = !toActive;
+  formAd.querySelector('.ad-form__slider').disabled = !toActive;
+  formAd.querySelector('#timein').disabled = !toActive;
+  formAd.querySelector('#timeout').disabled = !toActive;
+  formAd.querySelector('#room_number').disabled = !toActive;
+  formAd.querySelector('#capacity').disabled = !toActive;
+  formAd.querySelectorAll('.features__checkbox').forEach((checkbox) => {checkbox.disabled = !toActive;});
+  formAd.querySelector('#description').disabled = !toActive;
+  formAd.querySelector('#images').disabled = !toActive;
+  formAd.querySelector('.ad-form__submit').disabled = !toActive;
+  formAd.querySelector('.ad-form__reset').disabled = !toActive;
 
   //или
-  // formHeader.disabled = !toActive;
-  // form.querySelectorAll('.ad-form__element').forEach((field) => {
-  //   field.disabled = !toActive;
-  // });
+  //formHeader.disabled = !toActive;
+  //formAd.querySelectorAll('.ad-form__element').forEach((field)=>{
+  //	field.disabled = !toActive;
+  //});
+
+  ////////////////////////////////фильтр
+  const formMap = document.querySelector('.map__filters');
+  if (toActive) {
+    formMap.classList.remove('map__filters--disabled');
+  }
+  else {
+    formMap.classList.add('map__filters--disabled');
+  }
+
+  formMap.querySelectorAll('.map__filter').forEach((element) => {
+    element.disabled = !toActive;
+  });
+  formMap.querySelectorAll('fieldset').forEach((element) => {
+    element.disabled = !toActive;
+  });
+  //или
+  //formMap.querySelector('#housing-type').disabled = !toActive;
+  //formMap.querySelector('#housing-price').disabled = !toActive;
+  //formMap.querySelector('#housing-rooms').disabled = !toActive;
+  //formMap.querySelector('#housing-guests').disabled = !toActive;
+  //formMap.querySelector('#housing-features').disabled = !toActive;
 };
