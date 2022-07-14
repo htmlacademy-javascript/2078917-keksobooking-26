@@ -15,10 +15,44 @@ const initializeErrorElement = () => {
   return errorElement;
 };
 
-export const showError = (text) => {
+export const showError = (type, text) => {
   let errorElement = document.querySelector('.error');
   if (!errorElement) {
     errorElement = initializeErrorElement();
+  }
+  switch (String(type).toUpperCase()) {
+    case 'ERROR-FORM':
+      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
+        if (node.nodeType === 3) {
+          node.remove();
+        }
+      });
+      errorElement.querySelector('.error__message').prepend('Ошибка размещения объявления');
+      break;
+    case 'ERROR-IMAGE':
+      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
+        if (node.nodeType === 3) {
+          node.remove();
+        }
+      });
+      errorElement.querySelector('.error__message').prepend('Ошибка размещения изображения');
+      break;
+    case 'ERROR-LOAD':
+      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
+        if (node.nodeType === 3) {
+          node.remove();
+        }
+      });
+      errorElement.querySelector('.error__message').prepend('Ошибка загрузки');
+      break;
+    case 'ERROR':
+      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
+        if (node.nodeType === 3) {
+          node.remove();
+        }
+      });
+      errorElement.querySelector('.error__message').prepend('Ошибка');
+      break;
   }
   errorElement.querySelector('.error__info').textContent = text;
 
