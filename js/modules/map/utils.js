@@ -73,7 +73,7 @@ export const filterObjects = (filter, objects) => {
 
 export const getPin = ({ location }, baloon) => {
   const pinIcon = L.icon({
-    iconUrl: '../../../img/pin.svg',
+    iconUrl: '/img/pin.svg',
     iconSize: [40, 40],
     iconAnchor: [40, 20],
     popupAnchor: [-57, 10]
