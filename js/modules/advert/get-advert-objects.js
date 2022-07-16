@@ -18,7 +18,7 @@ const AVATAR_URLS = ['https://assets.htmlacademy.ru/content/intensive/javascript
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg',
   'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'];
 
-const MAX_RENT_PRICE = 5000;
+const MAX_RENT_PRICE = 100000;
 const MAX_ROOMS = 5;
 const MAX_GUESTS = 5;
 

@@ -9,6 +9,7 @@ const ROOMS_GUESTS = {
 };
 
 const form = document.querySelector('.notice').querySelector('.ad-form');
+
 export const pristine = new Pristine(form, {
   classTo: 'ad-form__element',
   errorClass: 'ad-form__element--invalid',
