@@ -71,6 +71,7 @@ typeElement.addEventListener('change', () => {
       max: parseInt(priceElement.max,10)
     }
   });
+  priceElement.dispatchEvent(new Event('input', { 'bubbles': true }));
   pristine.validate(priceElement);
 });
 
@@ -127,10 +128,12 @@ adForm.addEventListener('submit', (evt) => {
       .then(()=>{
         onFormReset();
         showSuccess();
-        submitElement.disabled = false;
       })
       .catch(()=>{
         showError('error-form', 'Ошибка отправки формы');
+      })
+      .finally(() => {
+        submitElement.disabled = false;
       });
   }
 });
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   sliderElement.noUiSlider.on('slide', () => {
     priceElement.value = sliderElement.noUiSlider.get();
+    pristine.validate(priceElement);
   });
   pristine.validate();
 });
