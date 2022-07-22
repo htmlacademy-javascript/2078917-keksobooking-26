@@ -1,42 +1,38 @@
 import { getAdvertElement } from '../advert/get-advert-element.js';
-import { getAdvertObjects } from '../advert/get-advert-objects.js';
-import { showError } from '../validation/popup.js';
 
 const TOKYO_LAT = 35.6895;
 const TOKYO_LNG = 139.692;
 const INITIAL_SCALE = 12;
 
-export const getInitialLatLng = () => ({
-  lat: TOKYO_LAT,
-  lng: TOKYO_LNG
-});
-
-const PRICE_CATEGORIES = {
-  'middle': [10000, 50000],
-  'low': [0, 10000],
-  'high': [50000, Infinity]
+const priceCategories = {
+  MIDDLE: [10000, 50000],
+  LOW: [0, 10000],
+  HIGH: [50000, Infinity]
 };
 
-export const getInitialScale = () => INITIAL_SCALE;
-
-export const isFiltered = (originValue, filterValue) => {
+const isFiltered = (originValue, filterValue) => {
   if (!filterValue || filterValue === 'any') {
     return true;
   }
-  return originValue === filterValue;
+  return String(originValue) === String(filterValue);
 };
 
-export const isIncluded = (array, subarray) => subarray.every((value) => array.includes(value));
+const isIncluded = (array, subarray) => {
+  if (!array || !subarray || !Array.isArray(array) || !Array.isArray(subarray)) {
+    return false;
+  }
+  return subarray.every((value) => array.includes(value));
+};
 
-export const getPriceCategory = (price) => {
-  for (const category in PRICE_CATEGORIES) {
-    if (price >= PRICE_CATEGORIES[category][0] && price < PRICE_CATEGORIES[category][1]) {
-      return category;
+const getPriceCategory = (price) => {
+  for (const category in priceCategories) {
+    if (price >= priceCategories[category][0] && price < priceCategories[category][1]) {
+      return category.toLowerCase();
     }
   }
 };
 
-export const getFiler = () => {
+const getFilter = () => {
   const filterElement = document.querySelector('.map__filters');
   const typeElement = filterElement.querySelector('#housing-type');
   const priceElement = filterElement.querySelector('#housing-price');
@@ -49,13 +45,13 @@ export const getFiler = () => {
   return {
     filterType: typeElement ? typeElement.options[typeElement.selectedIndex].value : null,
     filterPrice: priceElement ? priceElement.options[priceElement.selectedIndex].value : null,
-    filterRooms: roomsElement ? +roomsElement.options[roomsElement.selectedIndex].value : null,
-    filterGuests: guestsElement ? +guestsElement.options[guestsElement.selectedIndex].value : null,
+    filterRooms: roomsElement ? roomsElement.options[roomsElement.selectedIndex].value : null,
+    filterGuests: guestsElement ? guestsElement.options[guestsElement.selectedIndex].value : null,
     filterFeatures: Array.from(featureElements).filter((feature) => feature.checked).map((feature) => feature.value)
   };
 };
 
-export const filterObjects = (filter, objects) => {
+const filterObjects = (filter, objects) => {
   const { filterType, filterPrice, filterRooms, filterGuests, filterFeatures } = filter;
   const filteredElements = [];
   objects.forEach((element) => {
@@ -71,36 +67,60 @@ export const filterObjects = (filter, objects) => {
   return filteredElements;
 };
 
+export const getInitialLatLng = () => ({
+  lat: TOKYO_LAT,
+  lng: TOKYO_LNG
+});
+
+export const getInitialScale = () => INITIAL_SCALE;
+
 export const getPin = ({ location }, baloon) => {
-  const pinIcon = L.icon({
-    iconUrl: './img/pin.svg',
-    iconSize: [40, 40],
-    iconAnchor: [40, 20],
-    popupAnchor: [-57, 10]
-  });
-  return L.marker(location,
-    {
-      icon: pinIcon
-    })
-    .bindPopup(baloon, { offset: [40, 20] });
+  const pin = L.marker(location);
+
+  let pinIcon = null;
+  fetch('./img/pin.svg')
+    .then((result) => {
+      if (result.ok) {
+        pinIcon = L.icon({
+          iconUrl: './img/pin.svg',
+          iconSize: [40, 40]
+        });
+        pin.setIcon(pinIcon)
+          .bindPopup(baloon, { offset: [1, 28] });
+      }
+      else {
+        pin.bindPopup(baloon, { offset: [0, 42] });
+      }
+    });
+  return pin;
 };
 
-export const loadPinsGroup = (pinsGroup) => {
-  let adObjects = null;
-  try {
-    adObjects = getAdvertObjects(100);
-    if (!Array.isArray(adObjects) || adObjects.length === 0) {throw new Error('Не удалось загрузить объявления поблизости');}
-  }
-  catch (err) {
-    showError('error-Load',err.message);
-    pinsGroup = null;
-    return pinsGroup;
-  }
-  const filter = getFiler();
-  const filteredAdObjects = filterObjects(filter, adObjects);
-  for (let i = 0; i < Math.min(filteredAdObjects.length, 10); i++) {
-    const pin = getPin(filteredAdObjects[i], getAdvertElement(filteredAdObjects[i]));
+const addToPinsGroup = (pinsGroup, filteredObjects) => {
+  for (let i = 0; i < Math.min(filteredObjects.length, 10); i++) {
+    const pin = getPin(filteredObjects[i], getAdvertElement(filteredObjects[i]));
     pin.addTo(pinsGroup);
+  }
+  return pinsGroup;
+};
+
+export const downloadAdObjects = () =>
+  fetch('https://26.javascript.pages.academy/keksobooking/data')
+    .then((answer) => answer.json());
+
+export const loadPinsGroup = (pinsGroup, objects) => {
+  const filteredObjects = filterObjects(getFilter(), objects);
+  if (filteredObjects.length !== 0) {
+    return addToPinsGroup(pinsGroup, filteredObjects);
+  }
+  return null;
+};
+
+export const getPinsGroup = (objects) =>
+{
+  const pinsGroup = L.layerGroup();
+  loadPinsGroup(pinsGroup, objects);
+  if (!pinsGroup) {
+    throw new Error();
   }
   return pinsGroup;
 };

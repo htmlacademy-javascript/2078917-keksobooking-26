@@ -17,3 +17,11 @@ export const getEnding = (number, words) => {
     (oneDigitNumber === 4 && twoDigitNumber !== 14)) { return words[1]; }
   return words[2];
 };
+
+export const removeTextFromElement = (element) => {
+  element.childNodes.forEach((childNode) => {
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      childNode.remove();
+    }
+  });
+};

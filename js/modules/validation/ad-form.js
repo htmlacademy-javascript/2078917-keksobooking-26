@@ -1,55 +1,24 @@
 import { pristine } from './get-pristine-object.js';
-import { showError, showSuccess } from './popup.js';
+import { showError, showSuccess } from './show-popup.js';
 import { isImage } from './utils.js';
-import { getPriceFromType } from './utils.js';
+import { getHousingTypePrice } from './utils.js';
 
+const MAX_HOUSING_PHOTOS = 10;
 const adForm = document.querySelector('.ad-form');
 const avatarElement = adForm.querySelector('#avatar');
-const addressElement = adForm.querySelector('#address');
 const priceElement = adForm.querySelector('#price');
 const typeElement = adForm.querySelector('#type');
 const roomNumberElement = adForm.querySelector('#room_number');
 const capacityElement = adForm.querySelector('#capacity');
 const timeinElement = adForm.querySelector('#timein');
 const timeoutElement = adForm.querySelector('#timeout');
-const MAX_HOUSING_PHOTOS = 10;
 const photoContainerTemplateElement = adForm.querySelector('.ad-form__photo:last-of-type');
 const addPhotoElement = adForm.querySelector('#images');
 const resetElement = adForm.querySelector('.ad-form__reset');
 const submitElement = adForm.querySelector('.ad-form__submit');
 const sliderElement = adForm.querySelector('.ad-form__slider');
 
-typeElement.addEventListener('change', () => {
-  priceElement.placeholder = getPriceFromType(typeElement.value);
-  priceElement.min = getPriceFromType(typeElement.value);
-  sliderElement.noUiSlider.updateOptions({
-    range: {
-      min: +priceElement.min,
-      max: +priceElement.max
-    }
-  });
-  pristine.validate(priceElement);
-});
-
-addressElement.addEventListener('change', (evt) => {
-  const addressLabelElement = adForm.querySelector('.ad-form__label');
-  addressLabelElement.textContent = evt.target.value;
-});
-
-roomNumberElement.addEventListener('change', () => pristine.validate(capacityElement));
-
-timeinElement.addEventListener('change', (evt) => {
-  timeoutElement.value = evt.target.value;
-});
-
-timeoutElement.addEventListener('change', (evt) => {
-  timeinElement.value = evt.target.value;
-});
-
-const reset = () => {
-  //сброс фильтра
-  const formMap = document.querySelector('.map__filters');
-  formMap.reset();
+const onFormReset = () => {
   //Удаление всех изображений жилья
   const photosContainerElement = document
     .querySelector('.ad-form')
@@ -71,38 +40,109 @@ const reset = () => {
   avatarImageElement.src = 'img/muffin-grey.svg';
 
   adForm.reset();
+
+  //сброс фильтра
+  const formMap = document.querySelector('.map__filters');
+  formMap.reset();
+
   typeElement.dispatchEvent(new Event('change', { 'bubbles': true }));
+  sliderElement.noUiSlider.reset();
   pristine.validate();
 };
 
-adForm.addEventListener('submit', function (evt) {
+priceElement.addEventListener('input', (evt) => {
+  if (evt.target.value > sliderElement.noUiSlider.max) {
+    sliderElement.noUiSlider.set(sliderElement.noUiSlider.max);
+    return;
+  }
+  if (evt.target.value < sliderElement.noUiSlider.min || !evt.target.value) {
+    sliderElement.noUiSlider.reset();
+    return;
+  }
+  sliderElement.noUiSlider.set(evt.target.value);
+});
+
+typeElement.addEventListener('change', () => {
+  priceElement.placeholder = getHousingTypePrice(typeElement.value);
+  priceElement.min = getHousingTypePrice(typeElement.value);
+  sliderElement.noUiSlider.updateOptions({
+    range: {
+      min: parseInt(priceElement.min,10),
+      max: parseInt(priceElement.max,10)
+    }
+  });
+  pristine.validate(priceElement);
+});
+
+roomNumberElement.addEventListener('change', () => {
+  pristine.validate(capacityElement);
+});
+
+timeinElement.addEventListener('change', (evt) => {
+  timeoutElement.value = evt.target.value;
+});
+
+timeoutElement.addEventListener('change', (evt) => {
+  timeinElement.value = evt.target.value;
+});
+
+const onInvalidForm = (cb) => {
+  adForm.querySelectorAll('.ad-form__error').forEach((element) => {
+    (async () => {
+      for (let i = 0; i < 3; i++) {
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            element.style.color = 'tomato';
+            resolve();
+          }, 300);
+        });
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            element.style.color = 'black';
+            resolve();
+          }, 300);
+        });
+      }
+      cb();
+    })();
+  });
+};
+
+adForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
   if (!pristine.validate()) {
-    showError('error-form','Проверьте введенные данные');
-    evt.preventDefault();
+    submitElement.disabled = true;
+    onInvalidForm(() => {submitElement.disabled = false;});
   }
   else {
     submitElement.disabled = true;
-    try {
-      this.submit();
-    }
-    catch (err) {
-      showError('error-form',err.name);
-      return;
-    }
-    reset();
-    showSuccess();
-    submitElement.disabled=false;
+    fetch('https://26.javascript.pages.academy/keksobooking', {
+      method: 'POST',
+      headers: {
+        // 'Content-Type': 'multipart/form-data'
+      },
+      body: new FormData(adForm)
+    })
+      .then(()=>{
+        onFormReset();
+        showSuccess();
+        submitElement.disabled = false;
+      })
+      .catch(()=>{
+        showError('error-form', 'Ошибка отправки формы');
+      });
   }
 });
 
 resetElement.addEventListener('click', (evt) => {
   evt.preventDefault();
-  reset();
+  onFormReset();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  priceElement.placeholder = getPriceFromType(typeElement.value);
-  priceElement.min = getPriceFromType(typeElement.value);
+  priceElement.placeholder = getHousingTypePrice(typeElement.value);
+  priceElement.min = getHousingTypePrice(typeElement.value);
   noUiSlider.create(sliderElement, {
     range: {
       min: +priceElement.min,
@@ -116,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       from: function (value) { return parseInt(value, 10); }
     }
   });
-  sliderElement.noUiSlider.on('update', () => {
+  sliderElement.noUiSlider.on('slide', () => {
     priceElement.value = sliderElement.noUiSlider.get();
   });
   pristine.validate();
@@ -158,10 +198,6 @@ addPhotoElement.addEventListener('change', (evt) => {
   }
 });
 
-adForm.addEventListener('reset', () => {
-
-});
-
 avatarElement.addEventListener('change', (evt) => {
   const avatarImage = evt.target.files;
   if (avatarImage.lenth !== 0 && isImage(avatarImage[0])) {
@@ -173,5 +209,3 @@ avatarElement.addEventListener('change', (evt) => {
     // alert('Некорректный тип файла');
   }
 });
-
-

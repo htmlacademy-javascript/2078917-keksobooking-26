@@ -1,5 +1,4 @@
 export const activateFilter = (toActive) => {
-  ////////////////////////////////фильтр
   const formMap = document.querySelector('.map__filters');
   if (toActive) {
     formMap.classList.remove('map__filters--disabled');

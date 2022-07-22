@@ -1,4 +1,4 @@
-import { HOUSING_TYPES_EN_RU } from '../dictionary.js';
+import { housingTypeTranslation } from '../dictionary.js';
 import { getEnding } from '../utils.js';
 
 const ROOMS_GUESTS = {
@@ -9,6 +9,10 @@ const ROOMS_GUESTS = {
 };
 
 const form = document.querySelector('.notice').querySelector('.ad-form');
+const priceElement = form.querySelector('#price');
+const typeElement = form.querySelector('#type');
+const roomNumberElement = form.querySelector('#room_number');
+const capacityElement = form.querySelector('#capacity');
 
 export const pristine = new Pristine(form, {
   classTo: 'ad-form__element',
@@ -19,24 +23,20 @@ export const pristine = new Pristine(form, {
   errorTextClass: 'ad-form__error'
 });
 
-const priceElement = form.querySelector('#price');
-const typeElement = form.querySelector('#type');
 pristine.addValidator(
   priceElement,
   (value) => !(parseInt(value, 10) < parseInt(priceElement.min, 10)),
-  () => `Минимальная цена за жилье типа '${HOUSING_TYPES_EN_RU[typeElement.value]}' должна быть ${priceElement.min} рублей за ночь`
+  () => `Минимальная цена за жилье типа '${housingTypeTranslation[(typeElement.value).toUpperCase()]}' должна быть ${priceElement.min} рублей за ночь`
 );
 
-const roomNumberInput = form.querySelector('#room_number');
-const capacityInput = form.querySelector('#capacity');
 pristine.addValidator(
-  capacityInput,
-  (value) => ROOMS_GUESTS[roomNumberInput.value].includes(value),
+  capacityElement,
+  (value) => ROOMS_GUESTS[roomNumberElement.value].includes(value),
   () => {
-    const maxGuests = Math.max(...ROOMS_GUESTS[roomNumberInput.value]);
-    for (const option of capacityInput.options) {
+    const maxGuests = Math.max(...ROOMS_GUESTS[roomNumberElement.value]);
+    for (const option of capacityElement.options) {
       if (option.value === maxGuests.toString()) {
-        return `${roomNumberInput.value} ${getEnding(roomNumberInput.value, ['комната', 'комнаты', 'комнат'])} ${option.text}`;
+        return `${roomNumberElement.value} ${getEnding(roomNumberElement.value, ['комната', 'комнаты', 'комнат'])} ${option.text}`;
       }
     }
   }

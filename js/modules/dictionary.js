@@ -1,22 +1,22 @@
 /**
  * Англо-руский словарь типов жилья, где ключ - слово на англ. языке, значение - на русском языке
  */
-export const HOUSING_TYPES_EN_RU = {
-  'flat': 'Квартира',
-  'bungalow': 'Бунгало',
-  'house': 'Дом',
-  'palace': 'Дворец',
-  'hotel': 'Отель'
+export const housingTypeTranslation = {
+  FLAT: 'Квартира',
+  BUNGALOW: 'Бунгало',
+  HOUSE: 'Дом',
+  PALACE: 'Дворец',
+  HOTEL: 'Отель'
 };
 
 /**
  * Англо-русский словарь удобств в жилье, где ключ - слово на англ. языке, значение - на русском языке
  */
-export const FEATURES_EN_RU = {
-  'wifi': 'вай-фай',
-  'dishwasher': 'посудомоечная машина',
-  'parking': 'паркинг',
-  'washer': 'стиральная машина',
-  'elevator': 'лифт',
-  'conditioner': 'кондиционер'
+export const featureTranslation = {
+  WIFI: 'вай-фай',
+  DISHWASHER: 'посудомоечная машина',
+  PARKING: 'паркинг',
+  WASHER: 'стиральная машина',
+  ELEVATOR: 'лифт',
+  CONDITIONER: 'кондиционер'
 };

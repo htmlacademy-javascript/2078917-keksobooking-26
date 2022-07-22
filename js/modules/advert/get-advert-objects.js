@@ -1,5 +1,5 @@
 import { getRandomInt, getRandomFrac, getRandomSubarray, getRandomArray, GetRandomItem } from './get-random.js';
-import { HOUSING_TYPES_EN_RU, FEATURES_EN_RU } from '../dictionary.js';
+import { housingTypeTranslation, featureTranslation } from '../dictionary.js';
 import { getEnding } from '../utils.js';
 
 const LOCATION_LAT = {
@@ -30,7 +30,7 @@ const MAX_GUESTS = 5;
  */
 function generateTitleAndDescription() {
   this.title = (() => {
-    const typeRussian = HOUSING_TYPES_EN_RU[this.type];
+    const typeRussian = housingTypeTranslation[(this.type).toUpperCase()];
     if (typeRussian) {
       return `Сдается в аренду ${typeRussian}`;
     }
@@ -38,7 +38,7 @@ function generateTitleAndDescription() {
   this.description = (() => {
     let resultString = '';
 
-    const typeRussian = HOUSING_TYPES_EN_RU[this.type];
+    const typeRussian = housingTypeTranslation[(this.type).toUpperCase()];
     if (typeRussian) {
       if (this.guests || typeof (this.guests) === 'number') {
         const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
@@ -53,7 +53,7 @@ function generateTitleAndDescription() {
       resultString += ` Общее число комнат - ${this.rooms}.`;
     }
     if (Array.isArray(this.features) && this.features.length > 0) {
-      resultString += ` Среди удобств имеется: ${this.features.map((feature) => ` ${FEATURES_EN_RU[feature]}`)}.`;
+      resultString += ` Среди удобств имеется: ${this.features.map((feature) => ` ${featureTranslation[feature.toUpperCase()]}`)}.`;
     }
     return resultString;
   })();
@@ -66,7 +66,7 @@ function generateTitleAndDescription() {
  * @param {Array} number Количество генерируемых объектов.
  * @return {object} Массив объектов.
  */
-export const getAdvertObjects = (number) => {
+export const getAdvertObjects = (number = 0) => {
   const adverts = Array(number);
   for (let i = 1; i <= adverts.length; i++) {
     const lat = getRandomFrac(LOCATION_LAT.min, LOCATION_LAT.max, 5);
@@ -79,12 +79,12 @@ export const getAdvertObjects = (number) => {
       offer: {
         address: `${lat}, ${lng}`,
         price: getRandomInt(0, MAX_RENT_PRICE),
-        type: GetRandomItem(Object.keys(HOUSING_TYPES_EN_RU)),
+        type: GetRandomItem(Object.keys(housingTypeTranslation)),
         rooms: getRandomInt(0, MAX_ROOMS),
         guests: getRandomInt(0, MAX_GUESTS),
         checkin: GetRandomItem(CHECK_TIMES),
         checkout: GetRandomItem(CHECK_TIMES),
-        features: getRandomSubarray(Object.keys(FEATURES_EN_RU)),
+        features: getRandomSubarray(Object.keys(featureTranslation)),
         photos: getRandomArray(AVATAR_URLS),
         generateTitleAndDescription: generateTitleAndDescription
       },
