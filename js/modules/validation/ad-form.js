@@ -51,12 +51,12 @@ const onFormReset = () => {
 };
 
 priceElement.addEventListener('input', (evt) => {
-  if (evt.target.value > sliderElement.noUiSlider.max) {
-    sliderElement.noUiSlider.set(sliderElement.noUiSlider.max);
+  if (evt.target.value > sliderElement.noUiSlider.options.range.max) {
+    sliderElement.noUiSlider.set(sliderElement.noUiSlider.options.range.max);
     return;
   }
   if (evt.target.value < sliderElement.noUiSlider.min || !evt.target.value) {
-    sliderElement.noUiSlider.reset();
+    sliderElement.noUiSlider.set(sliderElement.noUiSlider.options.range.min);
     return;
   }
   sliderElement.noUiSlider.set(evt.target.value);
