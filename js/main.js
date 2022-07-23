@@ -1,42 +1,45 @@
 import './modules/validation/ad-form.js';
-import './modules/advert/get-advert-element.js';
-import '../pristine/pristine.min.js';
-import './modules/map/load-map.js';
-import './modules/site-statements/activate-adform.js';
-import './modules/site-statements/adctivate-filter.js';
-
-import { initializeMap, initializeMainPin, initializePinsGroup} from './modules/map/load-map.js';
+import { initializeMap, getMainPin } from './modules/map/load-map.js';
 import { resetMap } from './modules/map/reset-map.js';
 import { activateAdform } from './modules/site-statements/activate-adform.js';
-import { activateFilter } from './modules/site-statements/adctivate-filter.js';
+import { activateFilter } from './modules/site-statements/activate-filter.js';
+import { getPinsGroup } from './modules/map/utils.js';
+import { showPermanentError } from './modules/validation/show-popup.js';
+import { downloadAdObjects } from './modules/map/utils.js';
+import { resetPinsGroup } from './modules/map/reset-map.js';
 
-activateAdform(false);
-activateFilter(false);
+const filterElement = document.querySelector('.map__filters');
+const resetButtonElement = document.querySelector('.ad-form__reset');
+const isActive = true;
+const isDisabled = false;
+activateAdform(isDisabled);
+activateFilter(isDisabled);
 
-const map = initializeMap();
-const mainPin = initializeMainPin(map);
-if (map && mainPin) {
-  activateAdform(true);
-
-  const pinsGroup = initializePinsGroup(map);
-  if (pinsGroup) {
-    activateFilter(true);
-
-    const filterElement = document.querySelector('.map__filters');
-    const resetButtonElement = document.querySelector('.ad-form__reset');
-    resetButtonElement.addEventListener('click', () => {
-      resetMap(map, mainPin, pinsGroup);
-    });
-
-    filterElement.addEventListener('change', () => {
-      resetMap(map, mainPin, pinsGroup);
-    });
-
-  //   const filterFeatureElements = document.querySelector('.map__features');
-  //   filterFeatureElements.addEventListener('change', (evt) => {
-  //     //if (evt.target.className === 'map__checkbox') {
-  //       resetMap(map, mainPin, pinsGroup);
-  //     //}
-    //});
-  }
-}
+initializeMap(
+  (map) => {//onSuccess
+    const mainPin = getMainPin();
+    mainPin.addTo(map);
+    activateAdform(isActive);
+    let adObjects = null;
+    downloadAdObjects()
+      .then((objects) => {
+        adObjects = objects;
+        return getPinsGroup(objects);
+      })
+      .then((pinsGroup) => {
+        pinsGroup.addTo(map);
+        activateFilter(isActive);
+        filterElement.addEventListener('change', () => resetPinsGroup(pinsGroup, adObjects));
+        resetButtonElement.addEventListener('click', () => resetMap(map, mainPin, pinsGroup, adObjects));
+        filterElement.addEventListener('reset', () => resetMap(map, mainPin, pinsGroup, adObjects));
+      })
+      .catch(() => {
+        showPermanentError('Не удалось загрузить объявления');
+        resetButtonElement.addEventListener('click', () => resetMap(map, mainPin, null, adObjects));
+        filterElement.addEventListener('reset', () => resetMap(map, mainPin, null, adObjects));
+      });
+  },
+  (map) => {//onError
+    map.remove();
+    showPermanentError('Не удалось подключить плиточную карту. Попробуйте обновить страницу.');
+  });

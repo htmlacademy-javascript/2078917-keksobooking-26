@@ -17,11 +17,16 @@ const closeBaloons = (pinsGroup) => {
   });
 };
 
-//вып-ся после обноволения filter
-export const resetMap = (map, mainPin, pinsGroup) => {
-  pinsGroup.clearLayers();
+export const resetPinsGroup = (pinsGroup, adObjects) => {
+  if (pinsGroup) {
+    closeBaloons(pinsGroup);
+    pinsGroup.clearLayers();
+    loadPinsGroup(pinsGroup, adObjects);
+  }
+};
+
+export const resetMap = (map, mainPin, pinsGroup, adObjects) => {
   returnMainPin(mainPin);
   returnMapView(map);
-  loadPinsGroup(pinsGroup);
-  closeBaloons(pinsGroup);
+  resetPinsGroup(pinsGroup, adObjects);
 };

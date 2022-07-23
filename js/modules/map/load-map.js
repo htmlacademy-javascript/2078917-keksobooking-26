@@ -1,10 +1,9 @@
-import { getInitialLatLng, getInitialScale, loadPinsGroup } from './utils.js';
-import { showError } from '../validation/popup.js';
+import { getInitialLatLng, getInitialScale } from './utils.js';
 
-export const initializeMap = () => {
-  let map = L.map('map-canvas');//что если передать 'dacsfvwsevs'
+
+export const initializeMap = (onSuccess, onError) => {
+  const map = L.map('map-canvas');
   map
-    // .once('tileload', () => changeFilterState(true))
     .setView(getInitialLatLng(), getInitialScale());
   L
     .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -12,22 +11,16 @@ export const initializeMap = () => {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     })
     .once('tileerror', () => {
-      map.remove();
-      map = null;
-      showError('error-load','Не удалось подключить плиточную карту');
-
+      onError(map);
+    })
+    .once('tileload', () => {
+      onSuccess(map);
     })
     .addTo(map);
-  return map;
 };
 
-export const initializeMainPin = (map) => {
-  const mainPinIcon = L.icon({
-    iconUrl: './img/main-pin.svg',
-    iconSize: [52, 52],
-    iconAnchor: [52, 26]
-  });
-  const onMoveendPin = (latlng) => {
+export const getMainPin = () => {
+  const onMovePin = (latlng) => {
     const coordsElement = document
       .querySelector('.ad-form')
       .querySelector('#address');
@@ -35,29 +28,29 @@ export const initializeMainPin = (map) => {
     const lng = latlng.lng.toFixed(5);
     coordsElement.value = `${lat} ${lng}`;
   };
-  return L.marker(
+  const mainPin = L.marker(
     getInitialLatLng(),
     {
-      draggable: true,
-      icon: mainPinIcon///////////////////что если передать несуществующий путь
+      draggable: true
     }
   )
     .on('move', (evt) => {
-      onMoveendPin(evt.target.getLatLng());
+      onMovePin(evt.target.getLatLng());
     })
     .once('add', (evt) => {
-      onMoveendPin(evt.target.getLatLng());
-    })
-    .addTo(map);
+      onMovePin(evt.target.getLatLng());
+    });
+  let mainPinIcon = null;
+  fetch('./img/main-pin.svg')
+    .then((result) => {
+      if (result.ok) {
+        mainPinIcon = L.icon({
+          iconUrl: './img/main-pin.svg',
+          iconSize: [52, 52],
+          iconAnchor: [52, 26]
+        });
+        mainPin.setIcon(mainPinIcon);
+      }
+    });
+  return mainPin;
 };
-
-export const initializePinsGroup = (map) => {
-  let pinsGroup = L.layerGroup().addTo(map);
-  pinsGroup = loadPinsGroup(pinsGroup);
-  return pinsGroup;
-};
-
-// export const loadMap = (map) => {
-//   const pinsGroup = initializePinsGroup(map);
-//   return pinsGroup;
-// };

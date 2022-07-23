@@ -1,5 +1,4 @@
 export const activateAdform = (toActive) => {
-  ////////////////////////////////форма заполнения
   const formAd = document.querySelector('.ad-form');
   if (toActive) {
     formAd.classList.remove('ad-form--disabled');

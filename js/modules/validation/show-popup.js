@@ -1,3 +1,5 @@
+import { removeTextFromElement } from '../utils.js';
+
 const initializeErrorElement = () => {
   const errorTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorElement = errorTemplate.cloneNode(true);
@@ -20,48 +22,31 @@ export const showError = (type, text) => {
   if (!errorElement) {
     errorElement = initializeErrorElement();
   }
+  const errorMessage = errorElement.querySelector('.error__message');
+  const errorInfo = errorElement.querySelector('.error__info');
+  removeTextFromElement(errorMessage);
   switch (String(type).toUpperCase()) {
     case 'ERROR-FORM':
-      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
-        if (node.nodeType === 3) {
-          node.remove();
-        }
-      });
-      errorElement.querySelector('.error__message').prepend('Ошибка размещения объявления');
+      errorMessage.prepend('Ошибка размещения объявления');
       break;
     case 'ERROR-IMAGE':
-      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
-        if (node.nodeType === 3) {
-          node.remove();
-        }
-      });
-      errorElement.querySelector('.error__message').prepend('Ошибка размещения изображения');
+      errorMessage.prepend('Ошибка размещения изображения');
       break;
     case 'ERROR-LOAD':
-      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
-        if (node.nodeType === 3) {
-          node.remove();
-        }
-      });
-      errorElement.querySelector('.error__message').prepend('Ошибка загрузки');
+      errorMessage.prepend('Ошибка загрузки');
       break;
     case 'ERROR':
-      errorElement.querySelector('.error__message').childNodes.forEach((node) => {
-        if (node.nodeType === 3) {
-          node.remove();
-        }
-      });
-      errorElement.querySelector('.error__message').prepend('Ошибка');
+      errorMessage.prepend('Ошибка');
       break;
   }
-  errorElement.querySelector('.error__info').textContent = text;
+  errorInfo.textContent = text;
 
   const OnEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       errorElement.classList.add('visually-hidden');
     }
   };
-  document.body.addEventListener('keydown', OnEscKeydown, { once: true });
+  document.addEventListener('keydown', OnEscKeydown, { once: true });
 
   const OnDocumentClick = (evt) => {
     for (const node of errorElement.children) {
@@ -75,7 +60,6 @@ export const showError = (type, text) => {
   document.addEventListener('click', OnDocumentClick);
 
   errorElement.classList.remove('visually-hidden');
-
 };
 
 const initializeSuccessElement = () => {
@@ -97,7 +81,7 @@ export const showSuccess = () => {
       successElement.classList.add('visually-hidden');
     }
   };
-  document.body.addEventListener('keydown', OnEscKeydown, { once: true });
+  document.addEventListener('keydown', OnEscKeydown, { once: true });
 
   const OnDocumentClick = (evt) => {
     for (const node of successElement.children) {
@@ -112,4 +96,14 @@ export const showSuccess = () => {
 
   successElement.classList.remove('visually-hidden');
 
+};
+
+export const showPermanentError = (text) => {
+  const error = document.createElement('div');
+  error.textContent = text;
+  error.style.background = 'tomato';
+  error.style.color = 'white';
+  error.style.padding = '20px';
+  error.style.textAlign = 'center';
+  document.body.prepend(error);
 };
