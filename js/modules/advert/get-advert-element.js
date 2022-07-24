@@ -1,4 +1,4 @@
-import { housingTypeTranslation } from '../dictionary.js';
+import { HousingTypeTranslation } from '../dictionary.js';
 import { getEnding } from '../utils.js';
 import { removeTextFromElement } from '../utils.js';
 
@@ -48,7 +48,7 @@ export const getAdvertElement = (object) => {
   setTextOrRemoveElement(titleElement, title);
   setTextOrRemoveElement(addressElement, address);
   setTextOrRemoveElement(priceElement, price);
-  setTextOrRemoveElement(typeElement, housingTypeTranslation[type.toUpperCase()]);
+  setTextOrRemoveElement(typeElement, HousingTypeTranslation[type.toUpperCase()]);
   setTextOrRemoveElement(descriptionElement, description);
 
   if (rooms || typeof(rooms) === 'number') {

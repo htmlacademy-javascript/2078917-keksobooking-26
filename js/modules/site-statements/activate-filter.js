@@ -1,3 +1,7 @@
+/**
+ *
+ * @param {Boolean} toActive true - перевод панели фильтров в активный режим, false - в неактивный
+ */
 export const activateFilter = (toActive) => {
   const formMap = document.querySelector('.map__filters');
   if (toActive) {

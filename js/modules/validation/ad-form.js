@@ -18,6 +18,9 @@ const resetElement = adForm.querySelector('.ad-form__reset');
 const submitElement = adForm.querySelector('.ad-form__submit');
 const sliderElement = adForm.querySelector('.ad-form__slider');
 
+/**
+ * Выполняет действия при сбросе формы заполнения
+ */
 const onFormReset = () => {
   //Удаление всех изображений жилья
   const photosContainerElement = document
@@ -87,6 +90,10 @@ timeoutElement.addEventListener('change', (evt) => {
   timeinElement.value = evt.target.value;
 });
 
+/**
+ *
+ * @param {Function} cb Функция, выполняемая после мерцания ошибок валидации
+ */
 const onInvalidForm = (cb) => {
   adForm.querySelectorAll('.ad-form__error').forEach((element) => {
     (async () => {
@@ -120,9 +127,6 @@ adForm.addEventListener('submit', (evt) => {
     submitElement.disabled = true;
     fetch('https://26.javascript.pages.academy/keksobooking', {
       method: 'POST',
-      headers: {
-        // 'Content-Type': 'multipart/form-data'
-      },
       body: new FormData(adForm)
     })
       .then(()=>{
@@ -210,6 +214,6 @@ avatarElement.addEventListener('change', (evt) => {
   }
   else {
     evt.target.value = '';
-    // alert('Некорректный тип файла');
+    showError('error-image', 'Разрешено добавлять только изображения');
   }
 });

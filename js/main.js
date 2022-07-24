@@ -7,6 +7,7 @@ import { getPinsGroup } from './modules/map/utils.js';
 import { showPermanentError } from './modules/validation/show-popup.js';
 import { downloadAdObjects } from './modules/map/utils.js';
 import { resetPinsGroup } from './modules/map/reset-map.js';
+import { debounce } from './modules/utils.js';
 
 const filterElement = document.querySelector('.map__filters');
 const resetButtonElement = document.querySelector('.ad-form__reset');
@@ -29,7 +30,7 @@ initializeMap(
       .then((pinsGroup) => {
         pinsGroup.addTo(map);
         activateFilter(isActive);
-        filterElement.addEventListener('change', () => resetPinsGroup(pinsGroup, adObjects));
+        filterElement.addEventListener('change', debounce(() => resetPinsGroup(pinsGroup, adObjects)));
         resetButtonElement.addEventListener('click', () => resetMap(map, mainPin, pinsGroup, adObjects));
         filterElement.addEventListener('reset', () => resetMap(map, mainPin, pinsGroup, adObjects));
       })
