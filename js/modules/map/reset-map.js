@@ -1,14 +1,26 @@
-import { getInitialLatLng, getInitialScale } from './utils.js';
+import { initialLatLng, INITIAL_SCALE } from './utils.js';
 import { loadPinsGroup } from './utils.js';
 
+/**
+ *
+ * @param {Object} marker Сброс расположения главного маркера в исходное место
+ */
 const returnMainPin = (marker) => {
-  marker.setLatLng(getInitialLatLng());
+  marker.setLatLng(initialLatLng);
 };
 
+/**
+ *
+ * @param {Object} map Сброс масштаба карты в исходное
+ */
 const returnMapView = (map) => {
-  map.setView(getInitialLatLng(), getInitialScale());
+  map.setView(initialLatLng, INITIAL_SCALE);
 };
 
+/**
+ * Закрывает все открытые всплывающие окна маркеров
+ * @param {Object} pinsGroup
+ */
 const closeBaloons = (pinsGroup) => {
   pinsGroup.eachLayer((pin) => {
     if (pin.isPopupOpen()) {
@@ -17,6 +29,11 @@ const closeBaloons = (pinsGroup) => {
   });
 };
 
+/**
+ * Сбрасывает состояние группы маркеров с исходное
+ * @param {Object} pinsGroup Группа маркеров
+ * @param {Array} adObjects JSON-объекты, полученные из серверной части
+ */
 export const resetPinsGroup = (pinsGroup, adObjects) => {
   if (pinsGroup) {
     closeBaloons(pinsGroup);
@@ -25,6 +42,13 @@ export const resetPinsGroup = (pinsGroup, adObjects) => {
   }
 };
 
+/**
+ * Сбрасывает состояние карты в исходное
+ * @param {Object} map Карта
+ * @param {Object} mainPin Главный маркер
+ * @param {Object} pinsGroup Группа маркеров
+ * @param {Array} adObjects JSON-объекты, полученные из серверной части
+ */
 export const resetMap = (map, mainPin, pinsGroup, adObjects) => {
   returnMainPin(mainPin);
   returnMapView(map);

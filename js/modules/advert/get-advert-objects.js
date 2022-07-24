@@ -1,13 +1,13 @@
 import { getRandomInt, getRandomFrac, getRandomSubarray, getRandomArray, GetRandomItem } from './get-random.js';
-import { housingTypeTranslation, featureTranslation } from '../dictionary.js';
+import { HousingTypeTranslation, FeatureTranslation } from '../dictionary.js';
 import { getEnding } from '../utils.js';
 
-const LOCATION_LAT = {
+const locationLat = {
   min: 35.65,
   max: 35.7
 };
 
-const LOCATION_LNG = {
+const locationLng = {
   min: 139.7,
   max: 139.8
 };
@@ -30,7 +30,7 @@ const MAX_GUESTS = 5;
  */
 function generateTitleAndDescription() {
   this.title = (() => {
-    const typeRussian = housingTypeTranslation[(this.type).toUpperCase()];
+    const typeRussian = HousingTypeTranslation[(this.type).toUpperCase()];
     if (typeRussian) {
       return `Сдается в аренду ${typeRussian}`;
     }
@@ -38,7 +38,7 @@ function generateTitleAndDescription() {
   this.description = (() => {
     let resultString = '';
 
-    const typeRussian = housingTypeTranslation[(this.type).toUpperCase()];
+    const typeRussian = HousingTypeTranslation[(this.type).toUpperCase()];
     if (typeRussian) {
       if (this.guests || typeof (this.guests) === 'number') {
         const wordWithCorrectEnding = getEnding(this.guests, ['гостя', 'гостей', 'гостей']);
@@ -53,7 +53,7 @@ function generateTitleAndDescription() {
       resultString += ` Общее число комнат - ${this.rooms}.`;
     }
     if (Array.isArray(this.features) && this.features.length > 0) {
-      resultString += ` Среди удобств имеется: ${this.features.map((feature) => ` ${featureTranslation[feature.toUpperCase()]}`)}.`;
+      resultString += ` Среди удобств имеется: ${this.features.map((feature) => ` ${FeatureTranslation[feature.toUpperCase()]}`)}.`;
     }
     return resultString;
   })();
@@ -69,8 +69,8 @@ function generateTitleAndDescription() {
 export const getAdvertObjects = (number = 0) => {
   const adverts = Array(number);
   for (let i = 1; i <= adverts.length; i++) {
-    const lat = getRandomFrac(LOCATION_LAT.min, LOCATION_LAT.max, 5);
-    const lng = getRandomFrac(LOCATION_LNG.min, LOCATION_LNG.max, 5);
+    const lat = getRandomFrac(locationLat.min, locationLat.max, 5);
+    const lng = getRandomFrac(locationLng.min, locationLng.max, 5);
     const advert = {
       author: {
         //avatar: `img/avatars/user${(i < 10) ? `0${i}` : `${i}`}.png`
@@ -79,12 +79,12 @@ export const getAdvertObjects = (number = 0) => {
       offer: {
         address: `${lat}, ${lng}`,
         price: getRandomInt(0, MAX_RENT_PRICE),
-        type: GetRandomItem(Object.keys(housingTypeTranslation)),
+        type: GetRandomItem(Object.keys(HousingTypeTranslation)),
         rooms: getRandomInt(0, MAX_ROOMS),
         guests: getRandomInt(0, MAX_GUESTS),
         checkin: GetRandomItem(CHECK_TIMES),
         checkout: GetRandomItem(CHECK_TIMES),
-        features: getRandomSubarray(Object.keys(featureTranslation)),
+        features: getRandomSubarray(Object.keys(FeatureTranslation)),
         photos: getRandomArray(AVATAR_URLS),
         generateTitleAndDescription: generateTitleAndDescription
       },

@@ -1,5 +1,9 @@
 import { removeTextFromElement } from '../utils.js';
 
+/**
+ * Создает DOM-элемент - сообщение об ошибке и добавляет в конец тега body
+ * @returns DOM-элемент - сообщение об ошибке
+ */
 const initializeErrorElement = () => {
   const errorTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorElement = errorTemplate.cloneNode(true);
@@ -17,6 +21,11 @@ const initializeErrorElement = () => {
   return errorElement;
 };
 
+/**
+ * Создает DOM-элемент - сообщение об ошибке и заполняет текст сообщения, объявляет события
+ * @param {String} type Тип ошибки, от него зависит верхний текст сообщения
+ * @param {String} text Текст ошибки, размещен ниже типа ошибки
+ */
 export const showError = (type, text) => {
   let errorElement = document.querySelector('.error');
   if (!errorElement) {
@@ -62,6 +71,10 @@ export const showError = (type, text) => {
   errorElement.classList.remove('visually-hidden');
 };
 
+/**
+ * Создает DOM-элемент - сообщение об успешной отправке формы и добавляет в конец тега body
+ * @returns DOM-элемент - сообщение об успешной отправке формы
+ */
 const initializeSuccessElement = () => {
   const successTemplate = document.querySelector('#success').content.querySelector('.success');
   const successElement = successTemplate.cloneNode(true);
@@ -70,6 +83,9 @@ const initializeSuccessElement = () => {
   return successElement;
 };
 
+/**
+ * Создает DOM-элемент - сообщение об успешной отправке формы, объявляет события
+ */
 export const showSuccess = () => {
   let successElement = document.querySelector('.success');
   if (!successElement) {
@@ -98,6 +114,10 @@ export const showSuccess = () => {
 
 };
 
+/**
+ *Создает DOM-элемент - не закрывающееся сообщение об ошибке, добавляет в начало тэга body
+ * @param {String} text Текст ошибки
+ */
 export const showPermanentError = (text) => {
   const error = document.createElement('div');
   error.textContent = text;

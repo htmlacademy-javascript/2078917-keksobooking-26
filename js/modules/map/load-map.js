@@ -1,10 +1,14 @@
-import { getInitialLatLng, getInitialScale } from './utils.js';
+import { initialLatLng, INITIAL_SCALE } from './utils.js';
 
-
+/**
+ * Первоначальная инициализация карты
+ * @param {Function} onSuccess Функция, выполяющееся после успешной загрузки карты
+ * @param {Function} onError Функция, выполяющееся при ошибке инициализации карты
+ */
 export const initializeMap = (onSuccess, onError) => {
   const map = L.map('map-canvas');
   map
-    .setView(getInitialLatLng(), getInitialScale());
+    .setView(initialLatLng, INITIAL_SCALE);
   L
     .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -19,6 +23,10 @@ export const initializeMap = (onSuccess, onError) => {
     .addTo(map);
 };
 
+/**
+ * Создание и первоначальная инициализация главной метки
+ * @returns Главная метка
+ */
 export const getMainPin = () => {
   const onMovePin = (latlng) => {
     const coordsElement = document
@@ -29,7 +37,7 @@ export const getMainPin = () => {
     coordsElement.value = `${lat} ${lng}`;
   };
   const mainPin = L.marker(
-    getInitialLatLng(),
+    initialLatLng,
     {
       draggable: true
     }

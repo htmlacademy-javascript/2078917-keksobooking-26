@@ -25,3 +25,11 @@ export const removeTextFromElement = (element) => {
     }
   });
 };
+
+export const debounce = (cb) => {
+  let timeoutId = null;
+  return () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(cb, 500);
+  };
+};

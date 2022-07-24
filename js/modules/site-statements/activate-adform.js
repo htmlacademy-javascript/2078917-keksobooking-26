@@ -1,3 +1,7 @@
+/**
+ *
+ * @param {Boolean} toActive true - перевод формы заполнения в активный режим, false - в неактивный
+ */
 export const activateAdform = (toActive) => {
   const formAd = document.querySelector('.ad-form');
   if (toActive) {
