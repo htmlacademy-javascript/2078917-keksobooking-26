@@ -163,39 +163,50 @@ document.addEventListener('DOMContentLoaded', () => {
   pristine.validate();
 });
 
-addPhotoElement.addEventListener('change', (evt) => {
-  const photoContainersElement = document
-    .querySelector('.ad-form')
-    .querySelector('.ad-form__photo-container');
-  const newPhotos = evt.target.files;
-  const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
-  for (const photo of newPhotos) {
-    if (!isImage(photo)) {
+/**
+ * Отрисовывает выбранные изображения жиья
+ */
+const OnChangePhoto = () => {
+  const dt = new DataTransfer();
+  return (evt) => {
+    const photoContainersElement = document
+      .querySelector('.ad-form')
+      .querySelector('.ad-form__photo-container');
+    const newPhotos = evt.target.files;
+    const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
+    for (let i=0; i<newPhotos.length;i++) {
+      if (!isImage(newPhotos[i])) {
+        evt.target.value = '';
+        showError('error-image', 'Разрешено добавлять только изображения');
+        return;
+      }
+    }
+    if ((newPhotos.length + previousPhotos.length) > MAX_HOUSING_PHOTOS) {
       evt.target.value = '';
-      showError('error-image', 'Разрешено добавлять только изображения');
+      showError('error-image', `Разрешено добавлять не более ${MAX_HOUSING_PHOTOS} изображений`);
       return;
     }
-  }
-  if ((newPhotos.length + previousPhotos.length) > MAX_HOUSING_PHOTOS) {
-    evt.target.value = '';
-    showError('error-image',`Разрешено добавлять не более ${MAX_HOUSING_PHOTOS} изображений`);
-    return;
-  }
-  for (const photo of newPhotos) {
-    const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
-    photoContainerElement.classList.add('ad-form__photo--added');
-    const housingPhoto = document.createElement('img');
-    housingPhoto.style.width = '70px';
-    housingPhoto.style.height = '70px';
-    housingPhoto.alt = 'Фото жилья';
-    housingPhoto.src = window.URL.createObjectURL(photo);
-    photoContainerElement.append(housingPhoto);
-    photoContainersElement.insertBefore(photoContainerElement, photoContainerTemplateElement);
-  }
-  if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
-    photoContainerTemplateElement.remove();
-  }
-});
+    for (let i=0;i<newPhotos.length;i++) {
+      dt.items.add(newPhotos[i]);
+      const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
+      photoContainerElement.classList.add('ad-form__photo--added');
+      const housingPhoto = document.createElement('img');
+      housingPhoto.style.width = '70px';
+      housingPhoto.style.height = '70px';
+      housingPhoto.alt = 'Фото жилья';
+      housingPhoto.src = window.URL.createObjectURL(newPhotos[i]);
+      photoContainerElement.append(housingPhoto);
+      photoContainersElement.insertBefore(photoContainerElement, photoContainerTemplateElement);
+    }
+    if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
+      photoContainerTemplateElement.remove();
+    }
+    const temp = structuredClone(dt.files);
+    addPhotoElement.files = temp;
+  };
+};
+
+addPhotoElement.addEventListener('change', OnChangePhoto());
 
 avatarElement.addEventListener('change', (evt) => {
   const avatarImage = evt.target.files;
