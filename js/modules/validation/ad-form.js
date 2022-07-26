@@ -17,6 +17,7 @@ const addPhotoElement = adForm.querySelector('#images');
 const resetElement = adForm.querySelector('.ad-form__reset');
 const submitElement = adForm.querySelector('.ad-form__submit');
 const sliderElement = adForm.querySelector('.ad-form__slider');
+const photosBuffer = new DataTransfer();
 
 /**
  * Выполняет действия при сбросе формы заполнения
@@ -37,6 +38,7 @@ const onFormReset = () => {
   avatarImageElement.src = 'img/muffin-grey.svg';
 
   adForm.reset();
+  photosBuffer.items.clear();
 
   const formMap = document.querySelector('.map__filters');
   formMap.reset();
@@ -166,14 +168,14 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Отрисовывает выбранные изображения жиья
  */
-const OnChangePhoto = () => {
-  const dt = new DataTransfer();
-  return (evt) => {
+const OnChangePhoto = () =>
+  (evt) => {
     const photoContainersElement = document
       .querySelector('.ad-form')
       .querySelector('.ad-form__photo-container');
     const newPhotos = evt.target.files;
     const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
+
     for (let i=0; i<newPhotos.length;i++) {
       if (!isImage(newPhotos[i])) {
         evt.target.value = '';
@@ -187,7 +189,7 @@ const OnChangePhoto = () => {
       return;
     }
     for (let i=0;i<newPhotos.length;i++) {
-      dt.items.add(newPhotos[i]);
+      photosBuffer.items.add(newPhotos[i]);
       const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
       photoContainerElement.classList.add('ad-form__photo--added');
       const housingPhoto = document.createElement('img');
@@ -201,10 +203,9 @@ const OnChangePhoto = () => {
     if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
       photoContainerTemplateElement.remove();
     }
-    const temp = structuredClone(dt.files);
+    const temp = structuredClone(photosBuffer.files);
     addPhotoElement.files = temp;
   };
-};
 
 addPhotoElement.addEventListener('change', OnChangePhoto());
 
