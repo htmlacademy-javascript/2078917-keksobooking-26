@@ -28,10 +28,4 @@ export const activateAdform = (toActive) => {
   formAd.querySelector('#images').disabled = !toActive;
   formAd.querySelector('.ad-form__submit').disabled = !toActive;
   formAd.querySelector('.ad-form__reset').disabled = !toActive;
-
-  //или
-  //formHeader.disabled = !toActive;
-  //formAd.querySelectorAll('.ad-form__element').forEach((field)=>{
-  //	field.disabled = !toActive;
-  //});
 };

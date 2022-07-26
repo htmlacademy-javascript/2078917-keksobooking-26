@@ -22,29 +22,22 @@ const sliderElement = adForm.querySelector('.ad-form__slider');
  * Выполняет действия при сбросе формы заполнения
  */
 const onFormReset = () => {
-  //Удаление всех изображений жилья
-  const photosContainerElement = document
+  const photoWrappersContainerElement = document
     .querySelector('.ad-form')
     .querySelector('.ad-form__photo-container');
-  const photoContainerElements = photosContainerElement.querySelectorAll('.ad-form__photo--added');
-  const photosNumber = photoContainerElements.length;
-  photoContainerElements.forEach((photoContainer) => {
+  const photoWrapperElements = photoWrappersContainerElement.querySelectorAll('.ad-form__photo--added');
+  const photosNumber = photoWrapperElements.length;
+  photoWrapperElements.forEach((photoContainer) => {
     photoContainer.parentNode.removeChild(photoContainer);
   });
   if (photosNumber === MAX_HOUSING_PHOTOS) {
-    photosContainerElement.append(photoContainerTemplateElement);
+    photoWrappersContainerElement.append(photoContainerTemplateElement);
   }
-  //const propertyPhotos = adForm.querySelector('.ad-form__photo');
-  //while (propertyPhotos.lastChild) {
-  //  propertyPhotos.removeChild(propertyPhotos.lastChild);
-  //}
-  //Сброс аватарки
   const avatarImageElement = adForm.querySelector('.ad-form-header__preview img');
   avatarImageElement.src = 'img/muffin-grey.svg';
 
   adForm.reset();
 
-  //сброс фильтра
   const formMap = document.querySelector('.map__filters');
   formMap.reset();
 
@@ -176,17 +169,17 @@ addPhotoElement.addEventListener('change', (evt) => {
     .querySelector('.ad-form__photo-container');
   const newPhotos = evt.target.files;
   const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
+  for (const photo of newPhotos) {
+    if (!isImage(photo)) {
+      evt.target.value = '';
+      showError('error-image', 'Разрешено добавлять только изображения');
+      return;
+    }
+  }
   if ((newPhotos.length + previousPhotos.length) > MAX_HOUSING_PHOTOS) {
     evt.target.value = '';
     showError('error-image',`Разрешено добавлять не более ${MAX_HOUSING_PHOTOS} изображений`);
     return;
-  }
-  for (const photo of newPhotos) {
-    if (!isImage(photo)) {
-      evt.target.value = '';
-      showError('error-image','Разрешено добавлять только изображения');
-      return;
-    }
   }
   for (const photo of newPhotos) {
     const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
@@ -198,8 +191,6 @@ addPhotoElement.addEventListener('change', (evt) => {
     housingPhoto.src = window.URL.createObjectURL(photo);
     photoContainerElement.append(housingPhoto);
     photoContainersElement.insertBefore(photoContainerElement, photoContainerTemplateElement);
-    //const avatarPreviewElement = document.querySelector('.ad-form-header__preview img');
-    //avatarPreviewElement.src = window.URL.createObjectURL(avatarImage[0]);
   }
   if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
     photoContainerTemplateElement.remove();

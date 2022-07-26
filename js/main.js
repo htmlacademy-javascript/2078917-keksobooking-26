@@ -17,7 +17,7 @@ activateAdform(isDisabled);
 activateFilter(isDisabled);
 
 initializeMap(
-  (map) => {//onSuccess
+  (map) => {
     const mainPin = getMainPin();
     mainPin.addTo(map);
     activateAdform(isActive);
@@ -40,7 +40,7 @@ initializeMap(
         filterElement.addEventListener('reset', () => resetMap(map, mainPin, null, adObjects));
       });
   },
-  (map) => {//onError
+  (map) => {
     map.remove();
     showPermanentError('Не удалось подключить плиточную карту. Попробуйте обновить страницу.');
   });
