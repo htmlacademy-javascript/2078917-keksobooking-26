@@ -1,7 +1,7 @@
 /**
  * Англо-руский словарь типов жилья, где ключ - слово на англ. языке, значение - на русском языке
  */
-export const housingTypeTranslation = {
+export const HousingTypeTranslation = {
   FLAT: 'Квартира',
   BUNGALOW: 'Бунгало',
   HOUSE: 'Дом',
@@ -12,7 +12,7 @@ export const housingTypeTranslation = {
 /**
  * Англо-русский словарь удобств в жилье, где ключ - слово на англ. языке, значение - на русском языке
  */
-export const featureTranslation = {
+export const FeatureTranslation = {
   WIFI: 'вай-фай',
   DISHWASHER: 'посудомоечная машина',
   PARKING: 'паркинг',

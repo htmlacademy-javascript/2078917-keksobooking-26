@@ -1,5 +1,9 @@
 import { removeTextFromElement } from '../utils.js';
 
+/**
+ * Создает DOM-элемент - сообщение об ошибке и добавляет в конец тега body
+ * @returns DOM-элемент - сообщение об ошибке
+ */
 const initializeErrorElement = () => {
   const errorTemplate = document.querySelector('#error').content.querySelector('.error');
   const errorElement = errorTemplate.cloneNode(true);
@@ -17,6 +21,37 @@ const initializeErrorElement = () => {
   return errorElement;
 };
 
+/**
+ * При нажатии на Esc скрывает элемент
+ * @param {Event} evt Вызываемое событие
+ * @param {Element} element Элемент, который необходимо скрыть
+ */
+const OnEscKeydown = (evt, element) => {
+  if (evt.key === 'Escape') {
+    element.classList.add('visually-hidden');
+  }
+};
+
+/**
+ * При нажатии за пределы элемента, скрыть элемент
+ * @param {Event} evt Вызываемое событие
+ * @param {Element} element Элемент, который необходимо скрыть
+ */
+const OnDocumentClick = (evt, element) => {
+  for (const node of element.children) {
+    if (node === evt.target) {
+      return;
+    }
+  }
+  element.classList.add('visually-hidden');
+  document.removeEventListener('click', OnDocumentClick);
+};
+
+/**
+ * Создает DOM-элемент - сообщение об ошибке и заполняет текст сообщения, объявляет события
+ * @param {String} type Тип ошибки, от него зависит верхний текст сообщения
+ * @param {String} text Текст ошибки, размещен ниже типа ошибки
+ */
 export const showError = (type, text) => {
   let errorElement = document.querySelector('.error');
   if (!errorElement) {
@@ -41,27 +76,17 @@ export const showError = (type, text) => {
   }
   errorInfo.textContent = text;
 
-  const OnEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
-      errorElement.classList.add('visually-hidden');
-    }
-  };
-  document.addEventListener('keydown', OnEscKeydown, { once: true });
+  document.addEventListener('keydown', (evt) => OnEscKeydown(evt, errorElement), { once: true });
 
-  const OnDocumentClick = (evt) => {
-    for (const node of errorElement.children) {
-      if (node === evt.target) {
-        return;
-      }
-    }
-    errorElement.classList.add('visually-hidden');
-    document.removeEventListener('click', OnDocumentClick);
-  };
-  document.addEventListener('click', OnDocumentClick);
+  document.addEventListener('click', (evt) => OnDocumentClick(evt, errorElement));
 
   errorElement.classList.remove('visually-hidden');
 };
 
+/**
+ * Создает DOM-элемент - сообщение об успешной отправке формы и добавляет в конец тега body
+ * @returns DOM-элемент - сообщение об успешной отправке формы
+ */
 const initializeSuccessElement = () => {
   const successTemplate = document.querySelector('#success').content.querySelector('.success');
   const successElement = successTemplate.cloneNode(true);
@@ -70,34 +95,27 @@ const initializeSuccessElement = () => {
   return successElement;
 };
 
+/**
+ * Создает DOM-элемент - сообщение об успешной отправке формы, объявляет события
+ */
 export const showSuccess = () => {
   let successElement = document.querySelector('.success');
   if (!successElement) {
     successElement = initializeSuccessElement();
   }
 
-  const OnEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
-      successElement.classList.add('visually-hidden');
-    }
-  };
-  document.addEventListener('keydown', OnEscKeydown, { once: true });
+  document.addEventListener('keydown', (evt) => OnEscKeydown(evt, successElement), { once: true });
 
-  const OnDocumentClick = (evt) => {
-    for (const node of successElement.children) {
-      if (node === evt.target) {
-        return;
-      }
-    }
-    successElement.classList.add('visually-hidden');
-    document.removeEventListener('click', OnDocumentClick);
-  };
-  document.addEventListener('click', OnDocumentClick);
+  document.addEventListener('click', (evt) => OnDocumentClick(evt, successElement));
 
   successElement.classList.remove('visually-hidden');
 
 };
 
+/**
+ *Создает DOM-элемент - не закрывающееся сообщение об ошибке, добавляет в начало тэга body
+ * @param {String} text Текст ошибки
+ */
 export const showPermanentError = (text) => {
   const error = document.createElement('div');
   error.textContent = text;

@@ -17,31 +17,29 @@ const addPhotoElement = adForm.querySelector('#images');
 const resetElement = adForm.querySelector('.ad-form__reset');
 const submitElement = adForm.querySelector('.ad-form__submit');
 const sliderElement = adForm.querySelector('.ad-form__slider');
+const photosBuffer = new DataTransfer();
 
+/**
+ * Выполняет действия при сбросе формы заполнения
+ */
 const onFormReset = () => {
-  //Удаление всех изображений жилья
-  const photosContainerElement = document
+  const photoWrappersContainerElement = document
     .querySelector('.ad-form')
     .querySelector('.ad-form__photo-container');
-  const photoContainerElements = photosContainerElement.querySelectorAll('.ad-form__photo--added');
-  const photosNumber = photoContainerElements.length;
-  photoContainerElements.forEach((photoContainer) => {
+  const photoWrapperElements = photoWrappersContainerElement.querySelectorAll('.ad-form__photo--added');
+  const photosNumber = photoWrapperElements.length;
+  photoWrapperElements.forEach((photoContainer) => {
     photoContainer.parentNode.removeChild(photoContainer);
   });
   if (photosNumber === MAX_HOUSING_PHOTOS) {
-    photosContainerElement.append(photoContainerTemplateElement);
+    photoWrappersContainerElement.append(photoContainerTemplateElement);
   }
-  //const propertyPhotos = adForm.querySelector('.ad-form__photo');
-  //while (propertyPhotos.lastChild) {
-  //  propertyPhotos.removeChild(propertyPhotos.lastChild);
-  //}
-  //Сброс аватарки
   const avatarImageElement = adForm.querySelector('.ad-form-header__preview img');
   avatarImageElement.src = 'img/muffin-grey.svg';
 
   adForm.reset();
+  photosBuffer.items.clear();
 
-  //сброс фильтра
   const formMap = document.querySelector('.map__filters');
   formMap.reset();
 
@@ -87,6 +85,10 @@ timeoutElement.addEventListener('change', (evt) => {
   timeinElement.value = evt.target.value;
 });
 
+/**
+ *
+ * @param {Function} cb Функция, выполняемая после мерцания ошибок валидации
+ */
 const onInvalidForm = (cb) => {
   adForm.querySelectorAll('.ad-form__error').forEach((element) => {
     (async () => {
@@ -120,9 +122,6 @@ adForm.addEventListener('submit', (evt) => {
     submitElement.disabled = true;
     fetch('https://26.javascript.pages.academy/keksobooking', {
       method: 'POST',
-      headers: {
-        // 'Content-Type': 'multipart/form-data'
-      },
       body: new FormData(adForm)
     })
       .then(()=>{
@@ -166,41 +165,49 @@ document.addEventListener('DOMContentLoaded', () => {
   pristine.validate();
 });
 
-addPhotoElement.addEventListener('change', (evt) => {
-  const photoContainersElement = document
-    .querySelector('.ad-form')
-    .querySelector('.ad-form__photo-container');
-  const newPhotos = evt.target.files;
-  const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
-  if ((newPhotos.length + previousPhotos.length) > MAX_HOUSING_PHOTOS) {
-    evt.target.value = '';
-    showError('error-image',`Разрешено добавлять не более ${MAX_HOUSING_PHOTOS} изображений`);
-    return;
-  }
-  for (const photo of newPhotos) {
-    if (!isImage(photo)) {
+/**
+ * Отрисовывает выбранные изображения жиья
+ */
+const OnChangePhoto = () =>
+  (evt) => {
+    const photoContainersElement = document
+      .querySelector('.ad-form')
+      .querySelector('.ad-form__photo-container');
+    const newPhotos = evt.target.files;
+    const previousPhotos = photoContainersElement.querySelectorAll('.ad-form__photo--added');
+
+    for (let i=0; i<newPhotos.length;i++) {
+      if (!isImage(newPhotos[i])) {
+        evt.target.value = '';
+        showError('error-image', 'Разрешено добавлять только изображения');
+        return;
+      }
+    }
+    if ((newPhotos.length + previousPhotos.length) > MAX_HOUSING_PHOTOS) {
       evt.target.value = '';
-      showError('error-image','Разрешено добавлять только изображения');
+      showError('error-image', `Разрешено добавлять не более ${MAX_HOUSING_PHOTOS} изображений`);
       return;
     }
-  }
-  for (const photo of newPhotos) {
-    const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
-    photoContainerElement.classList.add('ad-form__photo--added');
-    const housingPhoto = document.createElement('img');
-    housingPhoto.style.width = '70px';
-    housingPhoto.style.height = '70px';
-    housingPhoto.alt = 'Фото жилья';
-    housingPhoto.src = window.URL.createObjectURL(photo);
-    photoContainerElement.append(housingPhoto);
-    photoContainersElement.insertBefore(photoContainerElement, photoContainerTemplateElement);
-    //const avatarPreviewElement = document.querySelector('.ad-form-header__preview img');
-    //avatarPreviewElement.src = window.URL.createObjectURL(avatarImage[0]);
-  }
-  if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
-    photoContainerTemplateElement.remove();
-  }
-});
+    for (let i=0;i<newPhotos.length;i++) {
+      photosBuffer.items.add(newPhotos[i]);
+      const photoContainerElement = photoContainerTemplateElement.cloneNode(false);
+      photoContainerElement.classList.add('ad-form__photo--added');
+      const housingPhoto = document.createElement('img');
+      housingPhoto.style.width = '70px';
+      housingPhoto.style.height = '70px';
+      housingPhoto.alt = 'Фото жилья';
+      housingPhoto.src = window.URL.createObjectURL(newPhotos[i]);
+      photoContainerElement.append(housingPhoto);
+      photoContainersElement.insertBefore(photoContainerElement, photoContainerTemplateElement);
+    }
+    if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
+      photoContainerTemplateElement.remove();
+    }
+    const temp = structuredClone(photosBuffer.files);
+    addPhotoElement.files = temp;
+  };
+
+addPhotoElement.addEventListener('change', OnChangePhoto());
 
 avatarElement.addEventListener('change', (evt) => {
   const avatarImage = evt.target.files;
@@ -210,6 +217,6 @@ avatarElement.addEventListener('change', (evt) => {
   }
   else {
     evt.target.value = '';
-    // alert('Некорректный тип файла');
+    showError('error-image', 'Разрешено добавлять только изображения');
   }
 });
