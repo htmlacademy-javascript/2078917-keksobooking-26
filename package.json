@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "browser-sync start --server --no-ui --files --config \"C:\\Users\\Dmitry\\Desktop\\htmlacademy\\VSCode\\bs-config.js\" \"js/**/*.js\"",
+    "start": "browser-sync start --server --no-ui --files \"js/**/*.js\"",
     "lint": "eslint js/"
   },
   "engines": {
