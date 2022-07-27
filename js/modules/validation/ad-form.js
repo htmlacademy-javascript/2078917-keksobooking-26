@@ -165,6 +165,18 @@ document.addEventListener('DOMContentLoaded', () => {
   pristine.validate();
 });
 
+const deepClone = (obj) =>  {
+  const cloneObj = {};
+  for (const i in obj) {
+    if (obj[i] instanceof Object) {
+      cloneObj[i] = deepClone(obj[i]);
+      continue;
+    }
+    cloneObj[i] = obj[i];
+  }
+
+};
+
 /**
  * Отрисовывает выбранные изображения жиья
  */
@@ -203,7 +215,7 @@ const OnChangePhoto = () =>
     if (newPhotos.length === (MAX_HOUSING_PHOTOS - previousPhotos.length)) {
       photoContainerTemplateElement.remove();
     }
-    const temp = structuredClone(photosBuffer.files);
+    const temp = deepClone(photosBuffer.files);
     addPhotoElement.files = temp;
   };
 
