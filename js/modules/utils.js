@@ -33,3 +33,14 @@ export const debounce = (cb) => {
     timeoutId = setTimeout(cb, 500);
   };
 };
+
+export const throttle = (callback, delayBetweenFrames) => {
+  let lastTime = 0;
+  return () => {
+    const now = new Date();
+    if (now - lastTime >= delayBetweenFrames) {
+      callback();
+      lastTime = now;
+    }
+  };
+};

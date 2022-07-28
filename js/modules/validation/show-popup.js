@@ -1,6 +1,37 @@
 import { removeTextFromElement } from '../utils.js';
 
 /**
+ * Массив слушателей событий
+ */
+const eventList = [];
+
+/**
+ * Добавляет обработчик события к элементу, добавляет событие в массив слушателей событий eventList
+ * @param {Object} element Элемент, на который вешается событие
+ * @param {String} event Тип события
+ * @param {Object} handler Указатель на обработчик события
+ */
+const addEvent = (element, event, handler,) => {
+  eventList.push({
+    element: element,
+    event: event,
+    handler: handler
+  });
+  element.addEventListener(event, handler);
+};
+
+/**
+ * Удаляет все слушатели событий, которые есть в массиве, массив очищается
+ */
+const removeEvents = () => {
+  while (eventList.length > 0) {
+    const eventListener = eventList[eventList.length - 1];
+    eventListener.element.removeEventListener(eventListener.event, eventListener.handler);
+    eventList.pop();
+  }
+};
+
+/**
  * Создает DOM-элемент - сообщение об ошибке и добавляет в конец тега body
  * @returns DOM-элемент - сообщение об ошибке
  */
@@ -16,36 +47,45 @@ const initializeErrorElement = () => {
   const errorButtonElement = errorElement.querySelector('.error__button');
   errorButtonElement.addEventListener('click', () => {
     errorElement.classList.add('visually-hidden');
+    removeEvents();
   });
   document.body.append(errorElement);
   return errorElement;
 };
 
 /**
- * При нажатии на Esc скрывает элемент
- * @param {Event} evt Вызываемое событие
- * @param {Element} element Элемент, который необходимо скрыть
+ * Нажата ли клавиша Esc
+ * @param {Event} evt Событие
  */
-const OnEscKeydown = (evt, element) => {
-  if (evt.key === 'Escape') {
-    element.classList.add('visually-hidden');
+const isEscKeydown = (evt) => evt.key === 'Escape';
+
+/**
+ * Произошло ли событие вне элемента
+ * @param {Event} evt Событие
+ * @param {Element} element Элемент
+ */
+const isOutOfElementClick = (evt, element) => {
+  for (const node of element.children) {
+    if (node === evt.target ||
+      (node.hasChildNodes() && !isOutOfElementClick(evt, node))) {
+      return false;
+    }
   }
+  return true;
 };
 
 /**
- * При нажатии за пределы элемента, скрыть элемент
- * @param {Event} evt Вызываемое событие
- * @param {Element} element Элемент, который необходимо скрыть
- */
-const OnDocumentClick = (evt, element) => {
-  for (const node of element.children) {
-    if (node === evt.target) {
-      return;
+   * Скрывает элемент в случае выполнения условия
+   * @param {} element Элемент
+   * @param {*} isProperEvent Условие
+   */
+const hideElement = (element, isProperEvent) =>
+  (evt) => {
+    if (isProperEvent(evt, element)) {
+      element.classList.add('visually-hidden');
+      removeEvents();
     }
-  }
-  element.classList.add('visually-hidden');
-  document.removeEventListener('click', OnDocumentClick);
-};
+  };
 
 /**
  * Создает DOM-элемент - сообщение об ошибке и заполняет текст сообщения, объявляет события
@@ -76,9 +116,8 @@ export const showError = (type, text) => {
   }
   errorInfo.textContent = text;
 
-  document.addEventListener('keydown', (evt) => OnEscKeydown(evt, errorElement), { once: true });
-
-  document.addEventListener('click', (evt) => OnDocumentClick(evt, errorElement));
+  addEvent(document, 'keydown', hideElement(errorElement, isEscKeydown));
+  addEvent(document, 'click', hideElement(errorElement, isOutOfElementClick));
 
   errorElement.classList.remove('visually-hidden');
 };
@@ -104,9 +143,8 @@ export const showSuccess = () => {
     successElement = initializeSuccessElement();
   }
 
-  document.addEventListener('keydown', (evt) => OnEscKeydown(evt, successElement), { once: true });
-
-  document.addEventListener('click', (evt) => OnDocumentClick(evt, successElement));
+  addEvent(document, 'keydown', hideElement(successElement, isEscKeydown));
+  addEvent(document, 'click', hideElement(successElement, isOutOfElementClick));
 
   successElement.classList.remove('visually-hidden');
 

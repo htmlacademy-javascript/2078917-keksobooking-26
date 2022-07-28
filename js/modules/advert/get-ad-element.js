@@ -51,7 +51,7 @@ export const getAdvertElement = (object) => {
   setTextOrRemoveElement(typeElement, HousingTypeTranslation[type.toUpperCase()]);
   setTextOrRemoveElement(descriptionElement, description);
 
-  if (rooms || typeof(rooms) === 'number') {
+  if (rooms || typeof (rooms) === 'number') {
     let wordWithCorrectEnding = getEnding(rooms, ['комната', 'комнаты', 'комнат']);
     capacityElement.textContent = `${rooms} ${wordWithCorrectEnding}`;
     if (guests || typeof (guests) === 'number') {
@@ -59,7 +59,7 @@ export const getAdvertElement = (object) => {
       capacityElement.textContent += ` для ${guests} ${wordWithCorrectEnding}`;
     }
   }
-  else if (guests || typeof(guests) === 'number') {
+  else if (guests || typeof (guests) === 'number') {
     const wordWithCorrectEnding = getEnding(guests, ['гостя', 'гостей', 'гостей']);
     capacityElement.textContent = `Для ${guests} ${wordWithCorrectEnding}`;
   }
@@ -102,7 +102,6 @@ export const getAdvertElement = (object) => {
   if (photos && Array.isArray(photos) && photos.length > 0) {
     photos.forEach((photo) => {
       const photoElement = photoElementTemplate.cloneNode(true);
-      //photoElement.attributes.src.textContent = photo;
       photoElement.src = photo;
       photoContainerElement.appendChild(photoElement);
     });
