@@ -1,4 +1,4 @@
-import { getAdvertElement } from '../advert/get-advert-element.js';
+import { getAdvertElement } from '../advert/get-ad-element.js';
 
 /**
  * Изначальная позиция главного маркера
@@ -21,6 +21,11 @@ const PriceCategories = {
   LOW: [0, 10000],
   HIGH: [50000, Infinity]
 };
+
+/**
+ * Количество меток, отображающихся на карте
+ */
+const PINS_NUMBER = 10;
 
 /**
  *
@@ -83,9 +88,9 @@ const getFilter = () => {
     filterPrice: priceElement ? priceElement.options[priceElement.selectedIndex].value : null,
     filterRooms: roomsElement ? roomsElement.options[roomsElement.selectedIndex].value : null,
     filterGuests: guestsElement ? guestsElement.options[guestsElement.selectedIndex].value : null,
-    filterFeatures: (()=>{
+    filterFeatures: (() => {
       const filterdFeatures = [];
-      featureElements.forEach((feature)=>{
+      featureElements.forEach((feature) => {
         if (feature.checked) {
           filterdFeatures.push(feature.value);
         }
@@ -112,7 +117,7 @@ const filterObjects = ({ filterType, filterPrice, filterRooms, filterGuests, fil
       isIncluded(features, filterFeatures)) {
       filteredElements.push(object);
     }
-    if (filteredElements.length === 10) {
+    if (filteredElements.length === PINS_NUMBER) {
       break;
     }
   }
@@ -176,8 +181,7 @@ export const loadPinsGroup = (pinsGroup, objects) => {
  * @param {Array} objects JSON-объекты, полученные из серверной части
  * @returns Группа маркеров
  */
-export const getPinsGroup = (objects) =>
-{
+export const getPinsGroup = (objects) => {
   let pinsGroup = L.layerGroup();
   pinsGroup = loadPinsGroup(pinsGroup, objects);
   if (!pinsGroup) {
